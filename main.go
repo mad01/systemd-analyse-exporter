@@ -64,5 +64,6 @@ func main() {
 	}
 	systemdNodeStartupDuration.Set(parsedTime.Seconds())
 	prom := Prom{}
+	prom.Init()
 	prom.serv("0.0.0.0:9011")
 }
