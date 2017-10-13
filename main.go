@@ -35,6 +35,11 @@ func (p *Prom) serv(addr string) {
 func getTimeFromSystemdAnalyse(input string) (time.Duration, error) {
 	split := strings.Split(input, "=")
 	onlytime := strings.TrimSpace(split[len(split)-1])
+
+	if strings.Contains(onlytime, "min") {
+		onlytime = strings.Replace(onlytime, "min ", "m", -1)
+	}
+
 	parsedTime, err := time.ParseDuration(onlytime)
 	if err != nil {
 		return time.Duration(0), fmt.Errorf("failed to parse duration: %v", err.Error())
@@ -53,7 +58,6 @@ func getSystemdAnalyseOutput() (string, error) {
 }
 
 func main() {
-	// "Startup finished in 1.238s (kernel) + 1.677s (initrd) + 7.406s (userspace) = 10.322s"
 	output, err := getSystemdAnalyseOutput()
 	if err != nil {
 		panic(err)
