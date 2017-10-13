@@ -1,0 +1,69 @@
+apiVersion: extensions/v1beta1
+kind: DaemonSet
+metadata:
+  name: systemd-exporter
+  namespace: monitoring
+spec:
+  template:
+    metadata:
+      name: systemd-exporter
+      labels:
+        app: systemd-exporter
+    spec:
+      hostNetwork: true
+      containers:
+      - name: systemd-exporter
+        image: quay.io/mad01/systemd-analyse-exporter:87365e4f599e24fc0614acfeaecdd2830a505a56
+        imagePullPolicy: IfNotPresent
+        ports:
+          - containerPort: 9011
+            hostPort: 9011
+            name: metrics
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - mountPath: /var/run/dbus
+            name: dbus
+      volumes:
+        - hostPath:
+            path: /var/run/dbus
+          name: dbus
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: systemd-exporter
+    k8s-app: systemd-exporter
+  name: systemd-exporter
+  namespace: monitoring
+spec:
+  ports:
+    - name: http-metrics
+      port: 9011
+      targetPort: metrics
+      protocol: TCP
+  selector:
+    app: systemd-exporter
+
+---
+
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: systemd-exporter
+  labels:
+    k8s-app: systemd-exporter
+spec:
+  jobLabel: k8s-app
+  selector:
+    matchLabels:
+      k8s-app: systemd-exporter
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  endpoints:
+    - port: http-metrics
+      interval: 30s
