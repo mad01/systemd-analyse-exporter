@@ -13,7 +13,7 @@ spec:
       hostNetwork: true
       containers:
       - name: systemd-exporter
-        image: quay.io/mad01/systemd-analyse-exporter:87365e4f599e24fc0614acfeaecdd2830a505a56
+        image: quay.io/mad01/systemd-analyse-exporter:1ee5627a0d0ef27335deb4c760ee18a73ef6a942
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 9011
