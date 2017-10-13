@@ -53,8 +53,12 @@ func getSystemdAnalyseOutput() (string, error) {
 }
 
 func main() {
-	source := "Startup finished in 1.238s (kernel) + 1.677s (initrd) + 7.406s (userspace) = 10.322s"
-	parsedTime, err := getTimeFromSystemdAnalyse(source)
+	// "Startup finished in 1.238s (kernel) + 1.677s (initrd) + 7.406s (userspace) = 10.322s"
+	output, err := getSystemdAnalyseOutput()
+	if err != nil {
+		panic(err)
+	}
+	parsedTime, err := getTimeFromSystemdAnalyse(output)
 	if err != nil {
 		panic(err)
 	}
