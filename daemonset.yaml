@@ -2,21 +2,21 @@ apiVersion: extensions/v1beta1
 kind: DaemonSet
 metadata:
   name: systemd-analyse-exporter
-  namespace: kube-system
 spec:
-  selector:
-    matchLabels:
-      name: systemd-analyse-exporter
   template:
     metadata:
+      name: systemd-analyse-exporter
       labels:
-        name: systemd-analyse-exporter
+        app: systemd-analyse-exporter
     spec:
       hostNetwork: true
       containers:
       - name: systemd-analyse-exporter
         image: quay.io/mad01/systemd-analyse-exporter:8b7a09bacd230381463fec41d5dd33540d14b2e7
         imagePullPolicy: IfNotPresent
+        ports:
+          - name: http-metrics
+            containerPort: 9011
         securityContext:
           privileged: true
         volumeMounts:
