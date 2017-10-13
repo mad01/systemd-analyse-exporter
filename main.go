@@ -63,4 +63,6 @@ func main() {
 		panic(err)
 	}
 	systemdNodeStartupDuration.Set(parsedTime.Seconds())
+	prom := Prom{}
+	prom.serv("0.0.0.0:9011")
 }
