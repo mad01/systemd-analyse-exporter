@@ -17,6 +17,11 @@ var (
 		Name: "systemd_analyse_total_startup_time_secounds",
 		Help: "systemd total startup time",
 	})
+	systemdNodeStartupDurationHistogram = prometheus.NewHistogram(prometheus.HistogramOpts{
+		Name:    "systemd_analyse_total_startup_time_histogram_secounds",
+		Help:    "systemd total startup time histogram",
+		Buckets: prometheus.LinearBuckets(1.0, 30.0, 30),
+	})
 )
 
 // Prom prometheus metrics struct
@@ -25,6 +30,7 @@ type Prom struct{}
 // Init prometheus metrics and register all metrics objects
 func (p *Prom) Init() {
 	prometheus.MustRegister(systemdNodeStartupDuration)
+	prometheus.MustRegister(systemdNodeStartupDurationHistogram)
 }
 
 func (p *Prom) serv(addr string) {
@@ -67,6 +73,7 @@ func main() {
 		panic(err)
 	}
 	systemdNodeStartupDuration.Set(parsedTime.Seconds())
+	systemdNodeStartupDurationHistogram.Observe(parsedTime.Seconds())
 	prom := Prom{}
 	prom.Init()
 	prom.serv("0.0.0.0:9011")
