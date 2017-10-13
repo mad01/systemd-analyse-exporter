@@ -1,4 +1,4 @@
-PROJ=pingpong
+PROJ=systemd-analyse-exporter
 ORG_PATH=github.com/mad01
 REPO_PATH=$(ORG_PATH)/$(PROJ)
 
@@ -20,28 +20,20 @@ test:
 	@go test -v -i $(shell go list ./... | grep -v '/vendor/')
 	@go test -v $(shell go list ./... | grep -v '/vendor/')
 
-build: bin/pingpong/dev
+build: build/dev
 
-bin/pingpong/dev:
+build/dev:
 	@go install -v -ldflags $(LD_FLAGS) 
 
-
-build-release: bin/pingpong/release
-
-bin/pingpong/release:
+build/release:
 	@go build -v -o _release/$(PROJ) -ldflags $(LD_FLAGS) 
 
 
-docker-build: docker/build/pingpong
-
-docker/build/pingpong:
+docker/build:
 	@docker build -t quay.io/mad01/$(PROJ):$(VERSION) --file Dockerfile .
 
-docker-push:
+docker/push:
 	@docker push quay.io/mad01/$(PROJ):$(VERSION)
 
-docker-login:
+docker/login:
 	@docker login -u $(QUAY_LOGIN) -p="$(QUAY_PASSWORD)" quay.io
-
-code-gen:
-	@protoc -I com/ com/com.proto --go_out=plugins=grpc:com
